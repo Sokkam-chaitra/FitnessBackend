@@ -24,11 +24,13 @@ namespace DemoWebApi.Controllers
             User user = tempContext.Users.FirstOrDefault(x => x.Username.ToLower() == login.username.ToLower() && x.Password.ToLower()==login.password);
             if (user != null)
             {
-                //generating token,information used to store of user in  payload to get token for jwt
+
                 List<Claim> claims = new List<Claim>(){
                     new Claim(JwtRegisteredClaimNames.Sub,_configuration["Jwt:Subject"]),
                     new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
                     new Claim("UserName",login.username),
+                    new Claim(ClaimTypes.NameIdentifier, (user.Id).ToString())
+
                 };
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
                 var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

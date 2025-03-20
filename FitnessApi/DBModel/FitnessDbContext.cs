@@ -15,6 +15,8 @@ public partial class FitnessDbContext : DbContext
     {
     }
 
+    public virtual DbSet<Calory> Calories { get; set; }
+
     public virtual DbSet<Tblworkout> Tblworkouts { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
@@ -25,6 +27,28 @@ public partial class FitnessDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Calory>(entity =>
+        {
+            entity.HasKey(e => e.Calorieid).HasName("PK__Calories__7F5FB65E57BD066B");
+
+            entity.Property(e => e.Calorieid).HasColumnName("calorieid");
+            entity.Property(e => e.Calories).HasColumnName("calories");
+            entity.Property(e => e.Fooditem)
+                .HasMaxLength(255)
+                .HasColumnName("fooditem");
+            entity.Property(e => e.Indate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Mealtype)
+                .HasMaxLength(50)
+                .HasColumnName("mealtype");
+            entity.Property(e => e.Userid).HasColumnName("userid");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Calories)
+                .HasForeignKey(d => d.Userid)
+                .HasConstraintName("FK__Calories__userid__46E78A0C");
+        });
+
         modelBuilder.Entity<Tblworkout>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Tblworko__3213E83F1902FBAD");
@@ -36,10 +60,19 @@ public partial class FitnessDbContext : DbContext
                 .HasMaxLength(500)
                 .HasColumnName("description");
             entity.Property(e => e.Duration).HasColumnName("duration");
+            entity.Property(e => e.Indate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
             entity.Property(e => e.Maxcalories).HasColumnName("maxcalories");
+            entity.Property(e => e.Userid).HasColumnName("userid");
             entity.Property(e => e.WorkoutName)
                 .HasMaxLength(255)
                 .HasColumnName("workout_name");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Tblworkouts)
+                .HasForeignKey(d => d.Userid)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_id");
         });
 
         modelBuilder.Entity<User>(entity =>
@@ -59,6 +92,9 @@ public partial class FitnessDbContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("created_time");
+            entity.Property(e => e.Email)
+                .HasMaxLength(255)
+                .HasColumnName("email");
             entity.Property(e => e.FirstName)
                 .HasMaxLength(255)
                 .IsUnicode(false)
@@ -67,18 +103,10 @@ public partial class FitnessDbContext : DbContext
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .HasColumnName("gender");
-            entity.Property(e => e.LastName)
-                .HasMaxLength(255)
-                .IsUnicode(false)
-                .HasColumnName("last_name");
             entity.Property(e => e.Password)
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("password");
-            entity.Property(e => e.Phone)
-                .HasMaxLength(20)
-                .IsUnicode(false)
-                .HasColumnName("phone");
             entity.Property(e => e.Username)
                 .HasMaxLength(255)
                 .IsUnicode(false)

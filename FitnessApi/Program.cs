@@ -1,5 +1,7 @@
 using System.Text;
+using FitnessApi.DBModel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +10,13 @@ var builder = WebApplication.CreateBuilder(args);
 //builder.Services.AddControllers(option => { 
 //    option.RespectBrowserAcceptHeader = true;
 //}).AddXmlSerializerFormatters(); //  Enable controllers
+
+var connectionString = builder.Configuration.GetConnectionString("demodbCS");
+
+builder.Services.AddDbContext<FitnessDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
+
 builder.Services.AddControllers()
     .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve);
 

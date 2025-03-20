@@ -22,7 +22,7 @@ namespace FitnessApi.Controllers
             var user = new User
             {
                 Username = login.username,
-                Password = login.password, // Consider hashing this before saving
+                Password = login.password, 
                 
             };
 
